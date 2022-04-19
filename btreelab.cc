@@ -35,6 +35,18 @@ int size(Bnode* root){
 	return size(root -> left) + size(root -> right) + 1;
 }
 
+int getCount(Bnode* root, string item, int count = 0) {
+	if (root == NULL) {
+		return count;
+	}
+	else if (root -> data == item) {
+		count++;
+	}
+
+	count = getCount(root -> left, item, count);
+	count = getCount(root -> right, item, count);
+	return count;
+}
 
 int main() {
 	ifstream file;
@@ -53,11 +65,24 @@ int main() {
 
 	// add all the names to the tree
 	while (getline(file, lineIn)) {
-		add(root, lineIn);
+		// find length of substring without trailing spaces
+		int substrLength;
+		for (substrLength = lineIn.length(); substrLength > 0; substrLength--) {
+			if (!isspace(lineIn[substrLength - 1])) {
+				break;
+			}
+		}
+
+		// add item without trailing spaces
+		add(root, lineIn.substr(0, substrLength));
 	}
 
-	// print the size of the tree as a basic test
-	cout << size(root) << endl;
+	// search for a name
+	cout << "Enter the name you want to search for: ";
+	cin >> lineIn;
+	int count = getCount(root, lineIn);
+	string msgEnd = (count == 1) ? " time." : " times.";
+	cout << "Your search name appears " << count << msgEnd << endl;
 
 	return EXIT_SUCCESS;
 }
