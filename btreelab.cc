@@ -36,7 +36,28 @@ int size(Bnode* root){
 }
 
 
-int main(){
+int main() {
+	ifstream file;
+	string lineIn;
 
-	return 0;
+	Bnode* root = NULL;  // root of the binary tree
+
+	// open names file
+	file.open("names.txt");
+
+	// check if file failed to open
+	if (file.fail()) {
+		cout << "Failed to open file." << endl;
+		return EXIT_FAILURE;
+	}
+
+	// add all the names to the tree
+	while (getline(file, lineIn)) {
+		add(root, lineIn);
+	}
+
+	// print the size of the tree as a basic test
+	cout << size(root) << endl;
+
+	return EXIT_SUCCESS;
 }
