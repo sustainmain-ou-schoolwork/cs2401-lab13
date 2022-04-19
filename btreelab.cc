@@ -35,7 +35,9 @@ int size(Bnode* root){
 	return size(root -> left) + size(root -> right) + 1;
 }
 
-int getCount(Bnode* root, string item, int count = 0) {
+int getCount(Bnode* root, string item) {
+	int count = 0;
+
 	if (root == NULL) {
 		return count;
 	}
@@ -43,10 +45,32 @@ int getCount(Bnode* root, string item, int count = 0) {
 		count++;
 	}
 
-	count = getCount(root -> left, item, count);
-	count = getCount(root -> right, item, count);
+	count += getCount(root -> left, item);
+	count += getCount(root -> right, item);
 	return count;
 }
+
+int getCountGreater(Bnode* root, string item) {
+	int count = 0;
+
+	if (root == NULL) {
+		return count;
+	}
+	else if ((root -> data) >= item) {
+		count += size(root -> right);
+		if ((root -> data) > item) {
+			count++;  // add an extra one for the root
+		}
+
+		count += getCountGreater(root -> left, item);
+		return count;
+	}
+	else {
+		count += getCountGreater(root -> right, item);
+		return count;
+	}
+}
+
 
 int main() {
 	ifstream file;
@@ -77,12 +101,19 @@ int main() {
 		add(root, lineIn.substr(0, substrLength));
 	}
 
-	// search for a name
+	// get a name to search in the tree
 	cout << "Enter the name you want to search for: ";
 	cin >> lineIn;
-	int count = getCount(root, lineIn);
-	string msgEnd = (count == 1) ? " time." : " times.";
-	cout << "Your search name appears " << count << msgEnd << endl;
+
+	// get values to print to the screen later
+	int count1 = getCount(root, lineIn);         // count the number of times the name appears in the tree
+	int count2 = getCountGreater(root, lineIn);  // count the number of names that come alphabetically after the name
+	string msg1End = (count1 == 1) ? " time." : " times.";
+	string msg2End = (count2 == 1) ? " name alphabetically after that." : " names alphabetically after that.";
+
+	// print the values found earlier
+	cout << "Your search name appears " << count1 << msg1End << endl;
+	cout << "There are " << count2 << msg2End << endl;
 
 	return EXIT_SUCCESS;
 }
